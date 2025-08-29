@@ -1,0 +1,151 @@
+/* Event Details Page Styles */
+
+.timeline {
+  position: relative;
+}
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 50px;
+  width: 2px;
+  height: calc(100% - 20px);
+  background: linear-gradient(to bottom, #007bff, #e9ecef);
+  z-index: 1;
+}
+
+.timeline-marker {
+  position: relative;
+  z-index: 2;
+}
+
+.timeline-content {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border-left: 4px solid #007bff;
+  transition: all 0.3s ease;
+}
+
+.timeline-content:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.requirements-list .bi-check-circle-fill {
+  font-size: 1.1rem;
+}
+
+/* Card hover effects */
+.card {
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+}
+
+/* Progress bar animation */
+.progress-bar {
+  transition: width 1s ease-in-out;
+}
+
+/* Badge improvements */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* Button improvements */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Hero section improvements */
+.hero-overlay {
+  background: linear-gradient(135deg, rgba(0,123,255,0.8), rgba(108,117,125,0.8));
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .timeline-item {
+    flex-direction: column;
+  }
+  
+  .timeline-marker {
+    margin-bottom: 1rem;
+  }
+  
+  .timeline-item::after {
+    display: none;
+  }
+  
+  .display-5 {
+    font-size: 2rem !important;
+  }
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Status badges */
+.badge.bg-success {
+  background-color: #28a745 !important;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+/* Icon improvements */
+.rounded-circle i {
+  font-size: 1.1rem;
+}
+
+/* Alert improvements */
+.alert {
+  border: none;
+  border-radius: 12px;
+}
+
+/* Share buttons */
+.btn-outline-primary:hover,
+.btn-outline-info:hover,
+.btn-outline-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
