@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import axios from '../utils/axios';
 import { useSocket } from './SocketContext';
@@ -117,7 +117,7 @@ export const NotificationProvider = ({ children }) => {
   const { user } = useAuth();
 
   // Fetch notifications
-  const fetchNotifications = async (page = 1, limit = 20) => {
+  const fetchNotifications = useCallback(async (page = 1, limit = 20) => {
     if (!user) return;
 
     dispatch({ type: NOTIFICATION_ACTIONS.FETCH_START });
@@ -141,7 +141,7 @@ export const NotificationProvider = ({ children }) => {
         payload: error.response?.data?.message || 'Failed to fetch notifications'
       });
     }
-  };
+  }, [user]);
 
   // Mark notification as read
   const markAsRead = async (notificationId) => {
@@ -253,14 +253,14 @@ export const NotificationProvider = ({ children }) => {
 
       return cleanup;
     }
-  }, [socket, user]);
+  }, [socket, user, onNotification]);
 
   // Fetch notifications when user logs in
   useEffect(() => {
     if (user) {
       fetchNotifications();
     }
-  }, [user]);
+  }, [user, fetchNotifications]);
 
   const value = {
     ...state,

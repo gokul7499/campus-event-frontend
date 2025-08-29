@@ -19,16 +19,16 @@ const Footer = () => {
               Discover, register, and manage campus events with ease.
             </p>
             <div className="d-flex gap-3">
-              <a href="#" className="text-light">
+              <a href="https://facebook.com" className="text-light" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-facebook" style={{ fontSize: '1.2rem' }}></i>
               </a>
-              <a href="#" className="text-light">
+              <a href="https://twitter.com" className="text-light" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-twitter" style={{ fontSize: '1.2rem' }}></i>
               </a>
-              <a href="#" className="text-light">
+              <a href="https://instagram.com" className="text-light" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-instagram" style={{ fontSize: '1.2rem' }}></i>
               </a>
-              <a href="#" className="text-light">
+              <a href="https://linkedin.com" className="text-light" target="_blank" rel="noopener noreferrer">
                 <i className="bi bi-linkedin" style={{ fontSize: '1.2rem' }}></i>
               </a>
             </div>

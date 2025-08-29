@@ -52,7 +52,7 @@ export const SocketProvider = ({ children }) => {
         setConnected(false);
       }
     }
-  }, [user]);
+  }, [user, socket]);
 
   // Send notification
   const sendNotification = (data) => {

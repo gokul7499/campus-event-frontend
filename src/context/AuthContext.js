@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       dispatch({ type: AUTH_ACTIONS.LOAD_USER_FAILURE, payload: 'No token found' });
     }
-  }, []);
+  }, [state.token]);
 
   // Load user
   const loadUser = async () => {

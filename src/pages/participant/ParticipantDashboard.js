@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container, Row, Col, Card, Badge, Button,
   ListGroup
@@ -119,13 +119,7 @@ const ParticipantDashboard = () => {
     return { events: mockEvents, notifications: mockNotifications };
   };
 
-  useEffect(() => {
-    if (user) {
-      fetchDashboardData();
-    }
-  }, [user]);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -192,7 +186,13 @@ const ParticipantDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setLoading]);
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user, fetchDashboardData]);
 
   const calculateAchievements = (stats) => {
     const achievements = [];
