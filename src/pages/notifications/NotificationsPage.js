@@ -5,11 +5,9 @@ import {
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
-import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const NotificationsPage = () => {
-  const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);

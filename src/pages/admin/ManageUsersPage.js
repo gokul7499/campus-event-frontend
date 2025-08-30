@@ -91,7 +91,7 @@ const ManageUsersPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.page, pagination.limit]);
+  }, [filters, pagination]);
 
   useEffect(() => {
     fetchUsers();

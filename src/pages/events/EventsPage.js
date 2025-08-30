@@ -24,6 +24,18 @@ const EventsPage = () => {
     itemsPerPage: 12
   });
 
+  const fetchCategories = useCallback(async () => {
+    try {
+      console.log('Fetching categories...');
+      const response = await axios.get('/api/categories');
+      console.log('Categories API Response:', response.data);
+      setCategories(response.data.data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      setCategories([]); // Set empty array on error
+    }
+  }, []);
+
   const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
@@ -80,18 +92,6 @@ const EventsPage = () => {
     fetchEvents();
     fetchCategories();
   }, [fetchEvents, fetchCategories]);
-
-  const fetchCategories = async () => {
-    try {
-      console.log('Fetching categories...');
-      const response = await axios.get('/api/categories');
-      console.log('Categories API Response:', response.data);
-      setCategories(response.data.data || []);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      setCategories([]); // Set empty array on error
-    }
-  };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

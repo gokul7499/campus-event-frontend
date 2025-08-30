@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  Container, Row, Col, Card, Table, Badge, Button, Form, 
-  Modal, Dropdown, Alert, Spinner, Tab, Tabs, ProgressBar 
+  Row, Col, Card, Table, Badge, Button, Form, 
+  Modal, Dropdown, Spinner, Tab, Tabs, ProgressBar 
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const ManageParticipantsPage = () => {
   const [participants, setParticipants] = useState([]);
@@ -37,6 +36,38 @@ const ManageParticipantsPage = () => {
   const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+
+  const fetchAnalytics = useCallback(async () => {
+    try {
+      const [userStatsRes, registrationStatsRes] = await Promise.allSettled([
+        axios.get('/api/users/stats'),
+        axios.get('/api/registrations/admin/stats')
+      ]);
+
+      if (userStatsRes.status === 'fulfilled') {
+        const userStats = userStatsRes.value.data.data;
+        setAnalytics(prev => ({
+          ...prev,
+          totalParticipants: userStats.roleStats?.participant || 0,
+          newThisMonth: userStats.newUsersThisMonth || 0,
+          departmentStats: userStats.departmentStats || []
+        }));
+      }
+
+      if (registrationStatsRes.status === 'fulfilled') {
+        const regStats = registrationStatsRes.value.data.data;
+        setAnalytics(prev => ({
+          ...prev,
+          averageEventsPerParticipant: regStats.averageRegistrationsPerUser || 0,
+          topParticipants: regStats.topParticipants || [],
+          registrationTrends: regStats.monthlyTrends || [],
+          engagementStats: regStats.engagementStats || {}
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+    }
+  }, []);
 
   const fetchParticipants = useCallback(async () => {
     try {
@@ -72,38 +103,6 @@ const ManageParticipantsPage = () => {
     fetchParticipants();
     fetchAnalytics();
   }, [fetchParticipants, fetchAnalytics]);
-
-  const fetchAnalytics = async () => {
-    try {
-      const [userStatsRes, registrationStatsRes] = await Promise.allSettled([
-        axios.get('/api/users/stats'),
-        axios.get('/api/registrations/admin/stats')
-      ]);
-
-      if (userStatsRes.status === 'fulfilled') {
-        const userStats = userStatsRes.value.data.data;
-        setAnalytics(prev => ({
-          ...prev,
-          totalParticipants: userStats.roleStats?.participant || 0,
-          newThisMonth: userStats.newUsersThisMonth || 0,
-          departmentStats: userStats.departmentStats || []
-        }));
-      }
-
-      if (registrationStatsRes.status === 'fulfilled') {
-        const regStats = registrationStatsRes.value.data.data;
-        setAnalytics(prev => ({
-          ...prev,
-          averageEventsPerParticipant: regStats.averageRegistrationsPerUser || 0,
-          topParticipants: regStats.topParticipants || [],
-          registrationTrends: regStats.monthlyTrends || [],
-          engagementStats: regStats.engagementStats || {}
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
-    }
-  };
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));

@@ -6,7 +6,6 @@ import {
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const SendNotificationPage = () => {
   const [users, setUsers] = useState([]);
