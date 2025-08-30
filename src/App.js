@@ -52,7 +52,7 @@ import NotFoundPage from './pages/errors/NotFoundPage';
 
 // Test utilities (for debugging)
 import './utils/testAuth';
-import '../test-backend';
+import './test-backend';
 
 function App() {
   const { user, loading } = useAuth();
