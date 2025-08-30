@@ -1,6 +1,6 @@
 {
   "name": "campus-event-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Frontend React application for Campus Event Management & Notification System",
   "private": true,
   "dependencies": {
