@@ -8,7 +8,6 @@ import { useAuth } from './context/AuthContext';
 // Layout components
 import Navbar from './components/common/Navbar';
 import Footer from './components/common/Footer';
-import LoadingSpinner from './components/common/LoadingSpinner';
 
 // Page components
 import HomePage from './pages/HomePage';
