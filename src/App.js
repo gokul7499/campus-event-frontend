@@ -51,11 +51,24 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 // Error components
 import NotFoundPage from './pages/errors/NotFoundPage';
 
+// Test utilities (for debugging)
+import './utils/testAuth';
+
 function App() {
   const { user, loading } = useAuth();
 
+  // Show loading spinner only during initial authentication check
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-3 text-muted">Initializing application...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

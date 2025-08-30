@@ -101,12 +101,34 @@ export const AuthProvider = ({ children }) => {
 
   // Load user on app start
   useEffect(() => {
-    if (state.token) {
-      loadUser();
-    } else {
-      dispatch({ type: AUTH_ACTIONS.LOAD_USER_FAILURE, payload: 'No token found' });
-    }
-  }, [state.token]);
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      console.log('🔐 Initializing auth, token exists:', !!token);
+      
+      if (token) {
+        try {
+          console.log('🔄 Loading user with existing token...');
+          await loadUser();
+          console.log('✅ User loaded successfully');
+        } catch (error) {
+          console.error('❌ Failed to load user:', error);
+          // Only remove token if it's definitely invalid
+          if (error.response?.status === 401) {
+            console.log('🚫 Token expired, removing from localStorage');
+            localStorage.removeItem('token');
+            dispatch({ type: AUTH_ACTIONS.LOAD_USER_FAILURE, payload: 'Token expired' });
+          } else {
+            dispatch({ type: AUTH_ACTIONS.LOAD_USER_FAILURE, payload: 'Failed to load user' });
+          }
+        }
+      } else {
+        console.log('ℹ️ No token found, user not authenticated');
+        dispatch({ type: AUTH_ACTIONS.LOAD_USER_FAILURE, payload: 'No token found' });
+      }
+    };
+
+    initializeAuth();
+  }, []); // Remove dependency on state.token to prevent infinite loops
 
   // Load user
   const loadUser = async () => {
@@ -114,15 +136,42 @@ export const AuthProvider = ({ children }) => {
     
     try {
       const response = await axios.get('/api/auth/me');
-      dispatch({
-        type: AUTH_ACTIONS.LOAD_USER_SUCCESS,
-        payload: response.data.data
-      });
+      
+      if (response.data.success && response.data.data.user) {
+        dispatch({
+          type: AUTH_ACTIONS.LOAD_USER_SUCCESS,
+          payload: response.data.data
+        });
+      } else {
+        throw new Error('Invalid response format from server');
+      }
     } catch (error) {
-      dispatch({
-        type: AUTH_ACTIONS.LOAD_USER_FAILURE,
-        payload: error.response?.data?.message || 'Failed to load user'
-      });
+      console.error('Load user error:', error);
+      
+      // Handle different types of errors
+      if (error.response?.status === 401) {
+        // Token is invalid, remove it
+        localStorage.removeItem('token');
+        dispatch({
+          type: AUTH_ACTIONS.LOAD_USER_FAILURE,
+          payload: 'Token expired, please login again'
+        });
+      } else if (error.response?.status >= 500) {
+        // Server error, don't remove token
+        dispatch({
+          type: AUTH_ACTIONS.LOAD_USER_FAILURE,
+          payload: 'Server error, please try again later'
+        });
+      } else {
+        // Other errors
+        dispatch({
+          type: AUTH_ACTIONS.LOAD_USER_FAILURE,
+          payload: error.response?.data?.message || 'Failed to load user'
+        });
+      }
+      
+      // Re-throw the error so the calling function can handle it
+      throw error;
     }
   };
 
@@ -132,20 +181,34 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      dispatch({
-        type: AUTH_ACTIONS.LOGIN_SUCCESS,
-        payload: {
-          token: response.data.token,
-          user: response.data.data.user
-        }
-      });
-      return { success: true };
+      
+      // Validate response format
+      if (response.data.success && response.data.token && response.data.data?.user) {
+        // Store token first
+        localStorage.setItem('token', response.data.token);
+        
+        // Update state
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_SUCCESS,
+          payload: {
+            token: response.data.token,
+            user: response.data.data.user
+          }
+        });
+        
+        return { success: true };
+      } else {
+        throw new Error('Invalid response format from server');
+      }
     } catch (error) {
+      console.error('Login error:', error);
+      
       const errorMessage = error.response?.data?.message || 'Login failed';
       dispatch({
         type: AUTH_ACTIONS.LOGIN_FAILURE,
         payload: errorMessage
       });
+      
       return { success: false, error: errorMessage };
     }
   };
@@ -252,42 +315,41 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
   };
 
-  // Check if user has permission
-  const hasPermission = (permission) => {
-    if (!state.user) return false;
+  // Validate token
+  const validateToken = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
     
-    const rolePermissions = {
-      admin: [
-        'manage_users',
-        'manage_events',
-        'manage_categories',
-        'view_analytics',
-        'system_config',
-        'manage_notifications'
-      ],
-      organizer: [
-        'create_events',
-        'manage_own_events',
-        'view_registrations',
-        'send_notifications',
-        'view_event_analytics'
-      ],
-      participant: [
-        'view_events',
-        'register_events',
-        'manage_profile',
-        'view_own_registrations'
-      ]
-    };
-
-    return rolePermissions[state.user.role]?.includes(permission) || false;
+    try {
+      const response = await axios.get('/api/auth/me');
+      return response.data.success && response.data.data.user;
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        return false;
+      }
+      return false;
+    }
   };
 
-  // Check if user has role
-  const hasRole = (roles) => {
-    if (!state.user) return false;
-    if (typeof roles === 'string') roles = [roles];
-    return roles.includes(state.user.role);
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+    return !!(state.token && state.user);
+  };
+
+  // Get user role
+  const getUserRole = () => {
+    return state.user?.role;
+  };
+
+  // Check if user has specific role
+  const hasRole = (role) => {
+    return state.user?.role === role;
+  };
+
+  // Check if user has specific permission
+  const hasPermission = (permission) => {
+    return state.user?.permissions?.includes(permission);
   };
 
   const value = {
@@ -302,7 +364,10 @@ export const AuthProvider = ({ children }) => {
     clearError,
     hasPermission,
     hasRole,
-    loadUser
+    loadUser,
+    validateToken,
+    isAuthenticated,
+    getUserRole
   };
 
   return (

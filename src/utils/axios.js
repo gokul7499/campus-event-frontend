@@ -29,10 +29,12 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid
+    // Only handle 401 errors for non-auth endpoints
+    if (error.response?.status === 401 && !error.config.url.includes('/api/auth/')) {
+      // Token expired or invalid for protected routes
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      // Don't redirect immediately, let the component handle it
+      console.warn('Token expired, please login again');
     }
     return Promise.reject(error);
   }
