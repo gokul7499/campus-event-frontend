@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Table, Badge, Form, Button, Spinner } from 'react-bootstrap';
+import { Row, Col, Card, Table, Badge, Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
 import LoadingSpinner from '../../components/common/LoadingSpinner';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Button, Form, Badge, Pagination, Alert } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import axios from '../../utils/axios';
@@ -24,12 +24,7 @@ const EventsPage = () => {
     itemsPerPage: 12
   });
 
-  useEffect(() => {
-    fetchEvents();
-    fetchCategories();
-  }, [filters, pagination.currentPage]);
-
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
@@ -79,7 +74,12 @@ const EventsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, pagination.currentPage, pagination.itemsPerPage]);
+
+  useEffect(() => {
+    fetchEvents();
+    fetchCategories();
+  }, [fetchEvents, fetchCategories]);
 
   const fetchCategories = async () => {
     try {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Container, Row, Col, Card, Button, Badge, Form, 
-  ListGroup, Spinner, Alert, Modal, Dropdown 
+  ListGroup, Spinner, Modal, Dropdown 
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
@@ -19,11 +19,7 @@ const NotificationsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [markingAsRead, setMarkingAsRead] = useState(false);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [filter, typeFilter]);
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams();
@@ -45,7 +41,11 @@ const NotificationsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, typeFilter]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const handleMarkAsRead = async (notificationId) => {
     try {

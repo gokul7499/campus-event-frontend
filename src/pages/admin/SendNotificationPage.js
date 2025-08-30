@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Row, Col, Card, Form, Button, Alert, Badge, 
+  Row, Col, Card, Form, Button, Badge, 
   Table, Modal, Spinner 
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -9,7 +9,6 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const SendNotificationPage = () => {
-  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [notificationData, setNotificationData] = useState({

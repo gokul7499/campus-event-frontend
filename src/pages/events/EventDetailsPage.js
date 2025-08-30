@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container, Row, Col, Card, Badge, Button, Alert,
-  ListGroup, Modal, Form, Spinner
+  Modal, Form, Spinner
 } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from '../../utils/axios';
@@ -34,16 +34,7 @@ const EventDetailsPage = () => {
   const [userRegistration, setUserRegistration] = useState(null);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (id) {
-      fetchEventDetails();
-      if (user) {
-        checkUserRegistration();
-      }
-    }
-  }, [id, user]);
-
-  const fetchEventDetails = async () => {
+  const fetchEventDetails = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -102,20 +93,28 @@ const EventDetailsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  const checkUserRegistration = async () => {
-    if (!user) return;
-
+  const checkUserRegistration = useCallback(async () => {
+    if (!user || !id) return;
+    
     try {
-      const response = await axios.get('/api/registrations/my');
-      const registrations = response.data.data;
-      const eventRegistration = registrations.find(reg => reg.event._id === id);
-      setUserRegistration(eventRegistration);
+      const response = await axios.get(`/api/registrations/check/${id}`);
+      setUserRegistration(response.data.data);
     } catch (error) {
-      console.log('Could not check user registration:', error.message);
+      console.error('Error checking user registration:', error);
+      setUserRegistration(null);
     }
-  };
+  }, [user, id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchEventDetails();
+      if (user) {
+        checkUserRegistration();
+      }
+    }
+  }, [id, user, fetchEventDetails, checkUserRegistration]);
 
   const handleRegistration = async () => {
     if (!user) {

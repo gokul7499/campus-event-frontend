@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Container, Row, Col, Card, Table, Badge, Button, Form, 
   Modal, Dropdown, Alert, Spinner, Tab, Tabs, ProgressBar 
@@ -38,12 +38,7 @@ const ManageParticipantsPage = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
-  useEffect(() => {
-    fetchParticipants();
-    fetchAnalytics();
-  }, [filters, pagination.currentPage]);
-
-  const fetchParticipants = async () => {
+  const fetchParticipants = useCallback(async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
@@ -71,7 +66,12 @@ const ManageParticipantsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, pagination.currentPage, pagination.itemsPerPage]);
+
+  useEffect(() => {
+    fetchParticipants();
+    fetchAnalytics();
+  }, [fetchParticipants, fetchAnalytics]);
 
   const fetchAnalytics = async () => {
     try {

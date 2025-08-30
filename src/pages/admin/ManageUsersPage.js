@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Row, Col, Card, Table, Button, Badge, Form,
-  InputGroup, Modal, Alert, Spinner, Pagination, Dropdown
+  InputGroup, Modal, Spinner, Pagination, Dropdown
 } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
@@ -30,11 +30,7 @@ const ManageUsersPage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [modalType, setModalType] = useState('view'); // 'view', 'edit', 'delete'
 
-  useEffect(() => {
-    fetchUsers();
-  }, [pagination.page, pagination.limit, filters.search, filters.role, filters.department, filters.isActive]);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -95,7 +91,11 @@ const ManageUsersPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters, pagination.page, pagination.limit]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleFilterChange = (field, value) => {
     setFilters(prev => ({ ...prev, [field]: value }));

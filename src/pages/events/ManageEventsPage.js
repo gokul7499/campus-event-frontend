@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, Table, Button, Badge, Form, Modal, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -19,14 +19,7 @@ const ManageEventsPage = () => {
     sortOrder: 'desc'
   });
 
-  useEffect(() => {
-    // Only fetch events if user is loaded
-    if (user) {
-      fetchEvents();
-    }
-  }, [filters, user]);
-
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     if (!user) {
       console.log('User not loaded yet, skipping fetch');
       setLoading(false);
@@ -130,7 +123,13 @@ const ManageEventsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, filters]);
+
+  useEffect(() => {
+    if (user) {
+      fetchEvents();
+    }
+  }, [user, fetchEvents]);
 
   const handleDeleteEvent = async () => {
     if (!eventToDelete) return;
