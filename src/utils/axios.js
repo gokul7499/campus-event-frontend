@@ -1,9 +1,10 @@
 import axios from 'axios';
+import config from '../config/config';
 
 // Create axios instance with base configuration
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://campus-event-backend.onrender.com',
-  timeout: 15000,
+  baseURL: config.api.baseURL,
+  timeout: config.api.timeout,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -12,13 +13,23 @@ const axiosInstance = axios.create({
 // Request interceptor to add auth token
 axiosInstance.interceptors.request.use(
   (config) => {
+    // Debug logging
+    console.log('🚀 API Request:', {
+      method: config.method?.toUpperCase(),
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: `${config.baseURL}${config.url}`
+    });
+
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('🔑 Token added to request');
     }
     return config;
   },
   (error) => {
+    console.error('❌ Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -26,9 +37,22 @@ axiosInstance.interceptors.request.use(
 // Response interceptor to handle errors
 axiosInstance.interceptors.response.use(
   (response) => {
+    console.log('✅ API Response:', {
+      status: response.status,
+      url: response.config.url,
+      data: response.data
+    });
     return response;
   },
   (error) => {
+    console.error('❌ API Error:', {
+      status: error.response?.status,
+      message: error.message,
+      url: error.config?.url,
+      baseURL: error.config?.baseURL,
+      fullURL: error.config ? `${error.config.baseURL}${error.config.url}` : 'Unknown'
+    });
+
     // Only handle 401 errors for non-auth endpoints
     if (error.response?.status === 401 && !error.config.url.includes('/api/auth/')) {
       // Token expired or invalid for protected routes

@@ -3,9 +3,10 @@
   publish = "build"
 
 [build.environment]
-  CI = "false"
+  REACT_APP_API_URL = "https://campus-event-backend.onrender.com"
+  REACT_APP_SOCKET_URL = "https://campus-event-backend.onrender.com"
   GENERATE_SOURCEMAP = "false"
-  NODE_VERSION = "18"
+  CI = "false"
 
 [[redirects]]
   from = "/*"

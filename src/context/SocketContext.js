@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import io from 'socket.io-client';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
+import config from '../config/config';
 
 const SocketContext = createContext();
 
@@ -12,7 +13,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (user) {
       
-      const newSocket = io(process.env.REACT_APP_SOCKET_URL || 'https://campus-event-backend.onrender.com', {
+      const newSocket = io(config.socket.url, {
         auth: {
           userId: user._id
         }

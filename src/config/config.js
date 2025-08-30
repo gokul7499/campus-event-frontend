@@ -75,4 +75,7 @@ const config = {
   }
 };
 
+// Ensure config is immutable
+Object.freeze(config);
+
 export default config;
