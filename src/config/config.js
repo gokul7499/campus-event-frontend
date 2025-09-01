@@ -2,8 +2,8 @@
 const config = {
   // API Configuration
   api: {
-    baseURL:'https://campus-event-h9ks.onrender.com/api',
-    timeout: 30000, // Increased timeout for slow responses
+    baseURL:process.env.REACT_APP_API_URL,
+    timeout: 10000, // Reduced timeout for faster failure detection
     retryAttempts: 3, // Number of retry attempts for failed requests
     endpoints: {
       auth: {
