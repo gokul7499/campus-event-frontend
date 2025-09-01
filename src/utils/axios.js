@@ -45,21 +45,32 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('❌ API Error:', {
+    console.error('❌ API Error Details:', {
       status: error.response?.status,
+      statusText: error.response?.statusText,
       message: error.message,
       url: error.config?.url,
       baseURL: error.config?.baseURL,
-      fullURL: error.config ? `${error.config.baseURL}${error.config.url}` : 'Unknown'
+      fullURL: error.config ? `${error.config.baseURL}${error.config.url}` : 'Unknown',
+      method: error.config?.method?.toUpperCase(),
+      data: error.response?.data,
+      headers: error.response?.headers
     });
 
-    // Only handle 401 errors for non-auth endpoints
-    if (error.response?.status === 401 && !error.config.url.includes('/api/auth/')) {
+    // Handle specific error types
+    if (error.response?.status === 404) {
+      console.error('🚫 404 Error: API endpoint not found. Check if backend is running and endpoints are correct.');
+      console.error('🔍 Attempted URL:', error.config ? `${error.config.baseURL}${error.config.url}` : 'Unknown');
+    }
+
+    // Only handle 401 errors for non-auth endpoints  
+    if (error.response?.status === 401 && !error.config.url.includes('/auth/')) {
       // Token expired or invalid for protected routes
       localStorage.removeItem('token');
       // Don't redirect immediately, let the component handle it
       console.warn('Token expired, please login again');
     }
+    
     return Promise.reject(error);
   }
 );

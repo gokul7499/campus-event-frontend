@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from '../utils/axios';
+import config from '../config/config';
+import { apiCall } from '../utils/apiEndpoints';
 
 // Initial state
 const initialState = {
@@ -135,7 +137,7 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.LOAD_USER_START });
     
     try {
-      const response = await axios.get('/api/auth/me');
+      const response = await apiCall.get(axios, config.api.endpoints.auth.me);
       
       if (response.data.success && response.data.data.user) {
         dispatch({
@@ -180,7 +182,7 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
 
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await apiCall.post(axios, config.api.endpoints.auth.login, { email, password });
       
       // Validate response format
       if (response.data.success && response.data.token && response.data.data?.user) {
@@ -218,7 +220,11 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.REGISTER_START });
 
     try {
-      const response = await axios.post('/api/auth/register', userData);
+      console.log('🚀 Attempting registration with data:', userData);
+      console.log('🔗 Using endpoint:', config.api.endpoints.auth.register);
+      console.log('🌐 Full URL will be:', `${config.api.baseURL}${config.api.endpoints.auth.register}`);
+      
+      const response = await apiCall.post(axios, config.api.endpoints.auth.register, userData);
       dispatch({
         type: AUTH_ACTIONS.REGISTER_SUCCESS,
         payload: {
@@ -228,7 +234,22 @@ export const AuthProvider = ({ children }) => {
       });
       return { success: true };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Registration failed';
+      console.error('❌ Registration error:', error);
+      console.error('❌ Error response:', error.response?.data);
+      console.error('❌ Error status:', error.response?.status);
+      
+      let errorMessage = 'Registration failed';
+      
+      if (error.response?.status === 404) {
+        errorMessage = 'Backend service not available. Please try again later.';
+      } else if (error.response?.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       dispatch({
         type: AUTH_ACTIONS.REGISTER_FAILURE,
         payload: errorMessage
@@ -240,7 +261,7 @@ export const AuthProvider = ({ children }) => {
   // Logout
   const logout = async () => {
     try {
-      await axios.post('/api/auth/logout');
+      await axios.post(config.api.endpoints.auth.logout);
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -251,7 +272,7 @@ export const AuthProvider = ({ children }) => {
   // Update profile
   const updateProfile = async (profileData) => {
     try {
-      const response = await axios.put('/api/auth/update-profile', profileData);
+      const response = await axios.put(config.api.endpoints.auth.updateProfile, profileData);
       dispatch({
         type: AUTH_ACTIONS.UPDATE_PROFILE_SUCCESS,
         payload: response.data.data
@@ -266,7 +287,7 @@ export const AuthProvider = ({ children }) => {
   // Update password
   const updatePassword = async (passwordData) => {
     try {
-      const response = await axios.put('/api/auth/update-password', passwordData);
+      const response = await axios.put(config.api.endpoints.auth.updatePassword, passwordData);
       dispatch({
         type: AUTH_ACTIONS.LOGIN_SUCCESS,
         payload: {
@@ -284,7 +305,7 @@ export const AuthProvider = ({ children }) => {
   // Forgot password
   const forgotPassword = async (email) => {
     try {
-      await axios.post('/api/auth/forgot-password', { email });
+      await axios.post(config.api.endpoints.auth.forgotPassword, { email });
       return { success: true };
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to send reset email';
@@ -295,7 +316,7 @@ export const AuthProvider = ({ children }) => {
   // Reset password
   const resetPassword = async (token, password) => {
     try {
-      const response = await axios.put(`/api/auth/reset-password/${token}`, { password });
+      const response = await axios.put(`${config.api.endpoints.auth.resetPassword}/${token}`, { password });
       dispatch({
         type: AUTH_ACTIONS.LOGIN_SUCCESS,
         payload: {
@@ -321,7 +342,7 @@ export const AuthProvider = ({ children }) => {
     if (!token) return false;
     
     try {
-      const response = await axios.get('/api/auth/me');
+      const response = await axios.get(config.api.endpoints.auth.me);
       return response.data.success && response.data.data.user;
     } catch (error) {
       if (error.response?.status === 401) {

@@ -7,6 +7,7 @@
   REACT_APP_SOCKET_URL = "https://campus-event-backend.onrender.com"
   GENERATE_SOURCEMAP = "false"
   CI = "false"
+  NODE_ENV = "production"
 
 [[redirects]]
   from = "/*"
