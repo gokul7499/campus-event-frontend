@@ -4,16 +4,17 @@ const config = {
   api: {
     baseURL: process.env.REACT_APP_API_URL || 'https://campus-event-backend.onrender.com',
     timeout: 30000, // Increased timeout for slow responses
+    retryAttempts: 3, // Number of retry attempts for failed requests
     endpoints: {
       auth: {
-        login: '/api/auth/login',
-        register: '/api/auth/register',
-        logout: '/api/auth/logout',
-        me: '/api/auth/me',
-        forgotPassword: '/api/auth/forgot-password',
-        resetPassword: '/api/auth/reset-password',
-        updateProfile: '/api/auth/update-profile',
-        updatePassword: '/api/auth/update-password'
+        login: '/auth/login',
+        register: '/auth/register',
+        logout: '/auth/logout',
+        me: '/auth/me',
+        forgotPassword: '/auth/forgot-password',
+        resetPassword: '/auth/reset-password',
+        updateProfile: '/auth/update-profile',
+        updatePassword: '/auth/update-password'
       },
       events: {
         list: '/events',

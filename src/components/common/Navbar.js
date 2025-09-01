@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar, Nav, NavDropdown, Container, Badge } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import { useNotification } from '../../context/NotificationContext';
+import HealthCheck from './HealthCheck';
 
 const AppNavbar = () => {
   const { user, logout } = useAuth();
@@ -104,6 +105,13 @@ const AppNavbar = () => {
           </Nav>
 
           <Nav>
+            {/* Health Check - only show in development or when backend is down */}
+            {process.env.NODE_ENV === 'development' && (
+              <Nav.Item className="d-flex align-items-center me-3">
+                <HealthCheck />
+              </Nav.Item>
+            )}
+            
             {user ? (
               <>
                 {/* Notifications */}

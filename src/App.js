@@ -49,6 +49,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Error components
 import NotFoundPage from './pages/errors/NotFoundPage';
+import ErrorBoundary from './components/common/ErrorBoundary';
 
 // Test utilities (for debugging)
 import './utils/testAuth';
@@ -72,10 +73,11 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <Navbar />
-      
-      <main className="main-content">
+    <ErrorBoundary>
+      <div className="App">
+        <Navbar />
+        
+        <main className="main-content">
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
@@ -248,7 +250,8 @@ function App() {
         pauseOnHover
         theme="light"
       />
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
 

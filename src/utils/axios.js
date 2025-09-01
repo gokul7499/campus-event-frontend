@@ -61,6 +61,10 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 404) {
       console.error('🚫 404 Error: API endpoint not found. Check if backend is running and endpoints are correct.');
       console.error('🔍 Attempted URL:', error.config ? `${error.config.baseURL}${error.config.url}` : 'Unknown');
+    } else if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {
+      console.error('🌐 Network Error: Unable to connect to backend server. Please check your internet connection and try again.');
+    } else if (error.code === 'ECONNREFUSED') {
+      console.error('🔌 Connection Refused: Backend server is not running or not accessible.');
     }
 
     // Only handle 401 errors for non-auth endpoints  
