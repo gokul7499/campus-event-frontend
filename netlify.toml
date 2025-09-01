@@ -3,8 +3,8 @@
   publish = "build"
 
 [build.environment]
-  REACT_APP_API_URL = "https://campus-event-backend.onrender.com"
-  REACT_APP_SOCKET_URL = "https://campus-event-backend.onrender.com"
+  REACT_APP_API_URL = "https://campus-event-h9ks.onrender.com/api"
+  REACT_APP_SOCKET_URL = "https://campus-event-h9ks.onrender.com"
   GENERATE_SOURCEMAP = "false"
   CI = "false"
   NODE_ENV = "production"
