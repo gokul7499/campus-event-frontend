@@ -2,7 +2,7 @@
 const config = {
   // API Configuration
   api: {
-    baseURL: process.env.REACT_APP_API_URL || 'https://campus-event-h9ks.onrender.com/api',
+    baseURL:'https://campus-event-h9ks.onrender.com/api',
     timeout: 30000, // Increased timeout for slow responses
     retryAttempts: 3, // Number of retry attempts for failed requests
     endpoints: {
@@ -38,7 +38,7 @@ const config = {
 
   // Socket Configuration
   socket: {
-    url: process.env.REACT_APP_SOCKET_URL || 'https://campus-event-h9ks.onrender.com',
+    url:  'https://campus-event-h9ks.onrender.com',
     options: {
       transports: ['websocket', 'polling'],
       timeout: 20000,
