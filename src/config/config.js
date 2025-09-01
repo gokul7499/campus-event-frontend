@@ -6,14 +6,14 @@ const config = {
     timeout: 30000, // Increased timeout for slow responses
     endpoints: {
       auth: {
-        login: '/auth/login',
-        register: '/auth/register',
-        logout: '/auth/logout',
-        me: '/auth/me',
-        forgotPassword: '/auth/forgot-password',
-        resetPassword: '/auth/reset-password',
-        updateProfile: '/auth/update-profile',
-        updatePassword: '/auth/update-password'
+        login: '/api/auth/login',
+        register: '/api/auth/register',
+        logout: '/api/auth/logout',
+        me: '/api/auth/me',
+        forgotPassword: '/api/auth/forgot-password',
+        resetPassword: '/api/auth/reset-password',
+        updateProfile: '/api/auth/update-profile',
+        updatePassword: '/api/auth/update-password'
       },
       events: {
         list: '/events',
